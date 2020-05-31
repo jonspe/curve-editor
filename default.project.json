@@ -1,43 +1,6 @@
 {
   "name": "CurveEditor",
   "tree": {
-    "$path": "src",
-
-    "CurveRoot": {
-      "$className": "Part",
-      "$properties": {
-        "Color": [0, 1, 1],
-        "Size": [2, 2, 2],
-        "Anchored": true
-      },
-
-      "1": {
-        "$className": "Attachment",
-        "$properties": {
-          "Position": [-5, 0, 0]
-        }
-      },
-
-      "2": {
-        "$className": "Attachment",
-        "$properties": {
-          "Position": [-5, 0, -10]
-        }
-      },
-
-      "3": {
-        "$className": "Attachment",
-        "$properties": {
-          "Position": [5, 0, -10]
-        }
-      },
-
-      "4": {
-        "$className": "Attachment",
-        "$properties": {
-          "Position": [5, 0, 0]
-        }
-      }
-    }
+    "$path": "src"
   }
 }

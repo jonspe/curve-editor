@@ -1,0 +1,40 @@
+{
+  "Name": "CurveRoot",
+  "ClassName": "Part",
+  "Properties": {
+    "Color": [0, 1, 1],
+    "Size": [2, 2, 2],
+    "Anchored": true
+  },
+
+  "Children": [
+    {
+      "Name": "1",
+      "ClassName": "Attachment",
+      "Properties": {
+        "Position": [-5, 0, 0]
+      }
+    },
+    {
+      "Name": "2",
+      "ClassName": "Attachment",
+      "Properties": {
+        "Position": [-5, 0, -10]
+      }
+    },
+    {
+      "Name": "3",
+      "ClassName": "Attachment",
+      "Properties": {
+        "Position": [5, 0, -10]
+      }
+    },
+    {
+      "Name": "4",
+      "ClassName": "Attachment",
+      "Properties": {
+        "Position": [5, 0, 0]
+      }
+    }
+  ]
+}
