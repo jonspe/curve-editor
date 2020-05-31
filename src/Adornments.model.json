@@ -1,0 +1,87 @@
+{
+  "ClassName": "Folder",
+  "Children": [
+    {
+      "Name": "ControlPoint",
+      "ClassName": "SphereHandleAdornment",
+      
+      "Properties": {
+        "Radius": 1,
+        "Transparency": 0,
+        "Color3": [0.19, 0.54, 0.86],
+        "AlwaysOnTop": true,
+        "ZIndex": 3
+      },
+      
+      "Children": [
+        {
+          "Name": "DefaultColor",
+          "ClassName": "Color3Value",
+          "Properties": {
+            "Value": [0.19, 0.54, 0.86]
+          }
+        },
+        {
+          "Name": "HighlightColor",
+          "ClassName": "Color3Value",
+          "Properties": {
+            "Value": [0, 0.83, 1]
+          }
+        }
+      ]
+    },
+    
+    {
+      "Name": "TangentPoint",
+      "ClassName": "SphereHandleAdornment",
+      "Properties": {
+        "Radius": 1,
+        "Transparency": 0,
+        "Color3": [0.14, 0.80, 0.95],
+        "AlwaysOnTop": true,
+        "ZIndex": 2
+      },
+      
+      "Children": [
+        {
+          "Name": "DefaultColor",
+          "ClassName": "Color3Value",
+          "Properties": {
+            "Value": [0.14, 0.80, 0.95]
+          }
+        },
+        {
+          "Name": "HighlightColor",
+          "ClassName": "Color3Value",
+          "Properties": {
+            "Value": [0, 1, 1]
+          }
+        }
+      ]
+    },
+    
+    {
+      "Name": "CurveSegment",
+      "ClassName": "BoxHandleAdornment",
+      "Properties": {
+        "Size": [1, 1, 1],
+        "Transparency": 0,
+        "Color3": [1, 1, 1],
+        "AlwaysOnTop": false,
+        "ZIndex": -1
+      }
+    },
+    
+    {
+      "Name": "TangentSegment",
+      "ClassName": "BoxHandleAdornment",
+      "Properties": {
+        "Size": [1, 1, 1],
+        "Transparency": 0,
+        "Color3": [0.63, 0.98, 1],
+        "AlwaysOnTop": true,
+        "ZIndex": 1
+      }
+    }
+  ]
+}
