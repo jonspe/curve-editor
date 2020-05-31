@@ -1,0 +1,119 @@
+{
+  "name": "CurveEditor",
+  "tree": {
+    "$path": "src",
+
+    "Adornments": {
+      "$className": "Folder",
+
+      "ControlPoint": {
+        "$className": "SphereHandleAdornment",
+        "$properties": {
+          "Radius": 1,
+          "Transparency": 0,
+          "Color3": [0.19, 0.54, 0.86],
+          "AlwaysOnTop": true,
+          "ZIndex": 3
+        },
+
+        "DefaultColor": {
+          "$className": "Color3Value",
+          "$properties": {
+            "Value": [0.19, 0.54, 0.86]
+          }
+        },
+
+        "HighlightColor": {
+          "$className": "Color3Value",
+          "$properties": {
+            "Value": [0, 0.83, 1]
+          }
+        }
+      },
+
+      "TangentPoint": {
+        "$className": "SphereHandleAdornment",
+        "$properties": {
+          "Radius": 1,
+          "Transparency": 0,
+          "Color3": [0.14, 0.80, 0.95],
+          "AlwaysOnTop": true,
+          "ZIndex": 2
+        },
+
+        "DefaultColor": {
+          "$className": "Color3Value",
+          "$properties": {
+            "Value": [0.14, 0.80, 0.95]
+          }
+        },
+
+        "HighlightColor": {
+          "$className": "Color3Value",
+          "$properties": {
+            "Value": [0, 1, 1]
+          }
+        }
+      },
+
+      "CurveSegment": {
+        "$className": "BoxHandleAdornment",
+        "$properties": {
+          "Color3": [1, 1, 1],
+          "Transparency": 0,
+          "AlwaysOnTop": false,
+          "Size": [1, 1, 1],
+          "ZIndex": -1
+        }
+      },
+
+      "TangentSegment": {
+        "$className": "BoxHandleAdornment",
+        "$properties": {
+          "Color3": [0.63, 0.98, 1],
+          "Transparency": 0,
+          "AlwaysOnTop": true,
+          "Size": [1, 1, 1],
+          "ZIndex": 1
+        }
+      }
+    },
+
+    "CurveRoot": {
+      "$className": "Part",
+      "$properties": {
+        "Color": [0, 1, 1],
+        "Size": [2, 2, 2],
+        "Anchored": true
+      },
+
+      "1": {
+        "$className": "Attachment",
+        "$properties": {
+          "Position": [-5, 0, 0]
+        }
+      },
+
+      "2": {
+        "$className": "Attachment",
+        "$properties": {
+          "Position": [-5, 0, -10]
+        }
+      },
+
+      "3": {
+        "$className": "Attachment",
+        "$properties": {
+          "Position": [5, 0, -10]
+        }
+      },
+
+      "4": {
+        "$className": "Attachment",
+        "$properties": {
+          "Position": [5, 0, 0]
+        }
+      }
+    }
+  }
+}
