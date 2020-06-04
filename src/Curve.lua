@@ -20,6 +20,13 @@ if GIZMO_ROOT == nil then
 end
 
 
+local function newAttachment(position, index)
+	local attachment = Instance.new("Attachment")
+	attachment.CFrame = CFrame.new(position)
+	attachment.Name = tostring(index)
+	return attachment
+end
+
 local function adorneeDtor(instance)
 	instance.Adornee = nil
 	return instance
@@ -30,29 +37,6 @@ local tangentPointPool = InstancePool.new(ROOT.Adornments.TangentPoint, 20, nil,
 local tangentSegmentPool = InstancePool.new(ROOT.Adornments.TangentSegment, 20, nil, adorneeDtor)
 local curveSegmentPool = InstancePool.new(ROOT.Adornments.CurveSegment, 5000, nil, adorneeDtor) -- max segment instances at one time parented to gizmo root
 
-local function newAttachment(position, index)
-	local attachment = Instance.new("Attachment")
-	attachment.CFrame = CFrame.new(position)
-	attachment.Name = tostring(index)
-	return attachment
-end
-
-
-local function isControl(index)
-	return (index - 1) % 3 == 0
-end
-
-local function isTangent(index)
-	return not isControl(index)
-end
-
-local function isLeftTangent(index)
-	return (index - 1) % 3 == 2
-end
-
-local function isRightTangent(index)
-	return (index - 1) % 3 == 1
-end
 
 
 local DISPLAY_SETTINGS = {}
@@ -107,6 +91,23 @@ function Curve.new(root)
 	self:validateControlPoints()
 	
 	return self
+end
+
+
+function Curve.isControl(index)
+	return (index - 1) % 3 == 0
+end
+
+function Curve.isTangent(index)
+	return (index - 1) % 3 ~= 0
+end
+
+function Curve.isLeftTangent(index)
+	return (index - 1) % 3 == 2
+end
+
+function Curve.isRightTangent(index)
+	return (index - 1) % 3 == 1
 end
 
 function Curve.setDisplaySettings(displaySettings)
@@ -216,10 +217,8 @@ function Curve:moveControlPoint(index, targetPos, modifier)
 	local indexp1 = looped and (index) % pointCount + 1 or index + 1
 	local indexp2 = looped and (index + 1) % pointCount + 1 or index + 2
 	
-	--print(string.format("m1: %s\tm2: %s\tp1: %s\tp2: %s\tlooped: %s", indexm1, indexm2, indexp1, indexp2, tostring(looped)))
-	
 	local origPos = controlPoints[index].WorldPosition
-	if isControl(index) then
+	if Curve.isControl(index) then
 		controlPoints[index].WorldPosition = targetPos
 		
 		-- move control point tangents along
@@ -229,15 +228,15 @@ function Curve:moveControlPoint(index, targetPos, modifier)
 		if controlPoints[indexp1] then
 			controlPoints[indexp1].WorldPosition = controlPoints[indexp1].WorldPosition - origPos + targetPos
 		end
-	elseif isTangent(index) then
+	elseif Curve.isTangent(index) then
 		controlPoints[index].WorldPosition = targetPos
 		
 		-- affect opposite tangents, but not with modifier key on
-		if isLeftTangent(index) and not modifier then
+		if Curve.isLeftTangent(index) and not modifier then
 			if controlPoints[indexp2] and controlPoints[indexp1] then
 				controlPoints[indexp2].WorldPosition = controlPoints[indexp1].WorldPosition - targetPos + controlPoints[indexp1].WorldPosition
 			end
-		elseif isRightTangent(index) and not modifier then
+		elseif Curve.isRightTangent(index) and not modifier then
 			if controlPoints[indexm2] and controlPoints[indexm1] then
 				controlPoints[indexm2].WorldPosition = controlPoints[indexm1].WorldPosition - targetPos + controlPoints[indexm1].WorldPosition
 			end
@@ -466,9 +465,9 @@ function Curve:drawHandles(visible, redraw)
 		local pointBall = self._indexToHandle[index]
 		
 		if pointBall == nil then
-			if isControl(index) then
+			if Curve.isControl(index) then
 				pointBall = controlPointPool:take(self.root)
-			elseif isTangent(index) then
+			elseif Curve.isTangent(index) then
 				pointBall = tangentPointPool:take(self.root)
 			end
 			
@@ -492,15 +491,15 @@ function Curve:drawHandles(visible, redraw)
 		pointBall.Parent = GIZMO_ROOT
 			
 		-- tangent line
-		if isTangent(index) then
+		if Curve.isTangent(index) then
 			local tangentSegment = tangentSegmentPool:take(self.root)
 			
 			local pos0 = attachment.Position
 			local pos1
 			if self:isLooped() then
-				pos1 = isLeftTangent(index) and controlPoints[(index+1) % pointCount].Position or controlPoints[index-1].Position
+				pos1 = Curve.isLeftTangent(index) and controlPoints[(index+1) % pointCount].Position or controlPoints[index-1].Position
 			else
-				pos1 = isLeftTangent(index) and controlPoints[index+1].Position or controlPoints[index-1].Position
+				pos1 = Curve.isLeftTangent(index) and controlPoints[index+1].Position or controlPoints[index-1].Position
 			end
 			
 			local dist = (pos1 - pos0).magnitude
