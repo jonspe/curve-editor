@@ -9,6 +9,7 @@ local StudioService = game:GetService("StudioService")
 
 ChangeHistoryService:SetEnabled(true)
 
+local Preferences = require(script.Preferences).init(plugin)
 local Helper = require(script.Helper)
 local Curve = require(script.Curve)
 local GizmoToolbar = require(script.GizmoToolbar)
@@ -20,24 +21,6 @@ local Editor = {
 	SelectedCurves = {},
 }
 
-local function retrieveSettings()
-	Editor.DrawAllCurves = plugin:GetSetting("DrawAllCurves") or true
-	Editor.CurveFidelity = 12 or plugin:GetSetting("CurveFidelity") or 12
-	Editor.CurveThickness = 0.5 or plugin:GetSetting("CurveThickness") or 0.5
-	Editor.MovementMode = plugin:GetSetting("MovementMode") or "ViewPlane"
-end
-
-local function syncSettings()
-	plugin:SetSetting("DrawAllCurves", Editor.DrawAllCurves)
-	plugin:SetSetting("CurveFidelity", Editor.CurveFidelity)
-	plugin:SetSetting("CurveThickness", Editor.CurveThickness)
-	plugin:SetSetting("MovementMode", Editor.MovementMode)
-end
-
-retrieveSettings()
-
--- temp hack
-Curve.setDisplaySettings(Editor)
 
 local toolbar = plugin:CreateToolbar("Curve Tools")
 

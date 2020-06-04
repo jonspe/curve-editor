@@ -6,13 +6,13 @@
 local Selection = game:GetService("Selection")
 local CollectionService = game:GetService("CollectionService")
 
-local Globals = require(script.Parent.Globals)
-local Helper = require(script.Parent.Helper)
-local InstancePool = require(script.Parent.InstancePool)
-local Signal = require(script.Parent.Signal)
 
 local ROOT = script.Parent
-
+local Preferences = require(ROOT.Preferences)
+local Globals = require(ROOT.Globals)
+local Helper = require(ROOT.Helper)
+local InstancePool = require(ROOT.InstancePool)
+local Signal = require(ROOT.Signal)
 
 
 local function newAttachment(position, index)
@@ -32,9 +32,6 @@ local tangentPointPool = InstancePool.new(ROOT.Adornments.TangentPoint, 20, nil,
 local tangentSegmentPool = InstancePool.new(ROOT.Adornments.TangentSegment, 20, nil, adorneeDtor)
 local curveSegmentPool = InstancePool.new(ROOT.Adornments.CurveSegment, 5000, nil, adorneeDtor) -- max segment instances at one time parented to gizmo root
 
-
-
-local DISPLAY_SETTINGS = {}
 
 local Curve = {}
 Curve.__index = Curve
@@ -105,10 +102,6 @@ function Curve.isRightTangent(index)
 	return (index - 1) % 3 == 1
 end
 
-function Curve.setDisplaySettings(displaySettings)
-	DISPLAY_SETTINGS = displaySettings
-end
-
 function Curve:cleanUp()
 	self._childAddedConn:Disconnect()
 	self._childRemovedConn:Disconnect()
@@ -139,13 +132,25 @@ function Curve:extend(position)
 	local pointCount = #controlPoints
 	
 	-- Calculate convenient new positions for control points
-	local pointPosition = position == nil and 2*controlPoints[pointCount].Position - controlPoints[pointCount-3].Position or position
-	local tangentPosition1 = 2 * controlPoints[pointCount].Position - controlPoints[pointCount-1].Position
-	local tangentPosition2 = pointPosition + controlPoints[pointCount-3].Position - controlPoints[pointCount-2].Position
+	local pointPosition = position == nil and
+		2*controlPoints[pointCount].Position
+		- controlPoints[pointCount-3].Position or position
+
+	local tangentPosition1 = 2 * controlPoints[pointCount].Position
+		- controlPoints[pointCount-1].Position
+
+	local tangentPosition2 = pointPosition
+		+ controlPoints[pointCount-3].Position
+		- controlPoints[pointCount-2].Position
 	
-	newAttachment(tangentPosition1, pointCount + 1).Parent = self.root -- Right tangent for last point
-	newAttachment(tangentPosition2, pointCount + 2).Parent = self.root -- Left tangent for new point
-	newAttachment(pointPosition, pointCount + 3).Parent = self.root -- New point
+	 -- Right tangent for last point
+	newAttachment(tangentPosition1, pointCount + 1).Parent = self.root
+
+	 -- Left tangent for new point
+	newAttachment(tangentPosition2, pointCount + 2).Parent = self.root
+
+	 -- New point
+	newAttachment(pointPosition, pointCount + 3).Parent = self.root
 end
 
 function Curve:shorten()
@@ -218,10 +223,12 @@ function Curve:moveControlPoint(index, targetPos, modifier)
 		
 		-- move control point tangents along
 		if controlPoints[indexm1] then
-			controlPoints[indexm1].WorldPosition = controlPoints[indexm1].WorldPosition - origPos + targetPos
+			controlPoints[indexm1].WorldPosition =
+				controlPoints[indexm1].WorldPosition - origPos + targetPos
 		end
 		if controlPoints[indexp1] then
-			controlPoints[indexp1].WorldPosition = controlPoints[indexp1].WorldPosition - origPos + targetPos
+			controlPoints[indexp1].WorldPosition =
+				controlPoints[indexp1].WorldPosition - origPos + targetPos
 		end
 	elseif Curve.isTangent(index) then
 		controlPoints[index].WorldPosition = targetPos
@@ -229,11 +236,15 @@ function Curve:moveControlPoint(index, targetPos, modifier)
 		-- affect opposite tangents, but not with modifier key on
 		if Curve.isLeftTangent(index) and not modifier then
 			if controlPoints[indexp2] and controlPoints[indexp1] then
-				controlPoints[indexp2].WorldPosition = controlPoints[indexp1].WorldPosition - targetPos + controlPoints[indexp1].WorldPosition
+				controlPoints[indexp2].WorldPosition =
+					controlPoints[indexp1].WorldPosition
+					- targetPos + controlPoints[indexp1].WorldPosition
 			end
 		elseif Curve.isRightTangent(index) and not modifier then
 			if controlPoints[indexm2] and controlPoints[indexm1] then
-				controlPoints[indexm2].WorldPosition = controlPoints[indexm1].WorldPosition - targetPos + controlPoints[indexm1].WorldPosition
+				controlPoints[indexm2].WorldPosition =
+					controlPoints[indexm1].WorldPosition
+					- targetPos + controlPoints[indexm1].WorldPosition
 			end
 		end
 	end
@@ -267,8 +278,10 @@ function Curve:validateControlPoints()
 	end
 	
 	-- Check if there's a correct number of control points (4 + n*3)
-	if (#controlPoints < 4) or not (((#controlPoints - 4) % 3 == 0) or (#controlPoints - 4) % 3 == 2) then
-		success = false
+	if (#controlPoints < 4)
+		or not (((#controlPoints - 4) % 3 == 0)
+		or (#controlPoints - 4) % 3 == 2) then
+			success = false
 	end
 	
 	if success then
@@ -321,8 +334,12 @@ function Curve:setLooped(looped)
 		local pointCount = #controlPoints
 		
 		if looped then
-			local posLastRight = 2 * controlPoints[pointCount].Position - controlPoints[pointCount-1].Position
-			local posFirstLeft = 2 * controlPoints[1].Position - controlPoints[2].Position
+			local posLastRight =
+				2 * controlPoints[pointCount].Position
+				- controlPoints[pointCount-1].Position
+			local posFirstLeft =
+				2 * controlPoints[1].Position
+				- controlPoints[2].Position
 	
 			newAttachment(posLastRight, pointCount + 1).Parent = self.root -- Right tangent for last point
 			newAttachment(posFirstLeft, pointCount + 2).Parent = self.root -- Left tangent for first point
@@ -394,8 +411,6 @@ function Curve:drawLine(visible, redraw, cpIndex)
 	local success, controlPoints = self:getControlPoints()
 	if not success then return end
 
-	local pointCount = #controlPoints
-	
 	if redraw or not visible then
 		curveSegmentPool:giveAllKey(self.root)
 		self._indexToSegment = {}
@@ -403,6 +418,7 @@ function Curve:drawLine(visible, redraw, cpIndex)
 	
 	if not visible then return end
 	
+	local pointCount = #controlPoints
 	local curveFunction, segmentCount, lineSegmentCount
 	if self:isLooped() then
 		curveFunction = self:createClosedCurveFunction()
@@ -411,12 +427,17 @@ function Curve:drawLine(visible, redraw, cpIndex)
 		curveFunction = self:createOpenCurveFunction()
 		segmentCount = (pointCount-1)/3
 	end
-	lineSegmentCount = segmentCount * DISPLAY_SETTINGS.CurveFidelity
+
+	local fidelity = Preferences.get("curveFidelity")
+	local thickness = Preferences.get("curveThickness")
+
+	lineSegmentCount = segmentCount * fidelity
 	
 	for i = 1, lineSegmentCount do
+		-- .999 cus if precise, out of bounds cus createcurvefunction 0->lim 1
 		local pos0 = curveFunction((i-1)/lineSegmentCount)
-		local pos1 = curveFunction(i*.9999/lineSegmentCount) -- if precise, out of bounds cus createcurvefunction 0->lim 1
-		local dist = (pos1 - pos0).magnitude + DISPLAY_SETTINGS.CurveThickness/6
+		local pos1 = curveFunction(i*.9999/lineSegmentCount) 
+		local dist = (pos1 - pos0).magnitude + thickness/6
 		
 		local curveSegment = self._indexToSegment[i]
 		if curveSegment == nil then
@@ -425,9 +446,9 @@ function Curve:drawLine(visible, redraw, cpIndex)
 		end
 		
 		curveSegment.CFrame = CFrame.new(pos0, pos1) * CFrame.new(0, 0, -dist/2)
-		curveSegment.Size = Vector3.new(DISPLAY_SETTINGS.CurveThickness, DISPLAY_SETTINGS.CurveThickness, dist)
+		curveSegment.Size = Vector3.new(thickness, thickness, dist)
 		curveSegment.Color3 = Color3.new(.2, .5, 1)
-			:Lerp(Color3.new(1, 1, 1), math.clamp(i/DISPLAY_SETTINGS.CurveFidelity, 0, 1))
+			:Lerp(Color3.new(1, 1, 1), math.clamp(i/fidelity, 0, 1))
 		
 		curveSegment.Adornee = self.root
 		curveSegment.Parent = Globals.GIZMO_ROOT
@@ -438,9 +459,6 @@ function Curve:drawHandles(visible, redraw)
 	local success, controlPoints = self:getControlPoints()
 	if not success then return end
 
-	local pointCount = #controlPoints
-	
-	
 	tangentSegmentPool:giveAllKey(self.root)
 	
 	if redraw or not visible then
@@ -455,6 +473,10 @@ function Curve:drawHandles(visible, redraw)
 	end
 	
 	if not visible then return end
+	
+	local fidelity = Preferences.get("curveFidelity")
+	local thickness = Preferences.get("curveThickness")
+	local pointCount = #controlPoints
 	
 	for index, attachment in ipairs(controlPoints) do
 		local pointBall = self._indexToHandle[index]
@@ -492,15 +514,18 @@ function Curve:drawHandles(visible, redraw)
 			local pos0 = attachment.Position
 			local pos1
 			if self:isLooped() then
-				pos1 = Curve.isLeftTangent(index) and controlPoints[(index+1) % pointCount].Position or controlPoints[index-1].Position
+				pos1 = Curve.isLeftTangent(index)
+					and controlPoints[(index+1) % pointCount].Position
+					or controlPoints[index-1].Position
 			else
-				pos1 = Curve.isLeftTangent(index) and controlPoints[index+1].Position or controlPoints[index-1].Position
+				pos1 = Curve.isLeftTangent(index)
+					and controlPoints[index+1].Position
+					or controlPoints[index-1].Position
 			end
 			
 			local dist = (pos1 - pos0).magnitude
-			
 			tangentSegment.CFrame = CFrame.new(pos0, pos1) * CFrame.new(0, 0, -dist/2)
-			tangentSegment.Size = Vector3.new(DISPLAY_SETTINGS.CurveThickness*0.75, DISPLAY_SETTINGS.CurveThickness*0.75, dist)
+			tangentSegment.Size = Vector3.new(thickness*0.75, thickness*0.75, dist)
 			tangentSegment.Adornee = self.root
 			tangentSegment.Parent = Globals.GIZMO_ROOT
 		end
