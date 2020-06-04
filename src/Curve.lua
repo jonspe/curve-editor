@@ -5,19 +5,14 @@
 
 local Selection = game:GetService("Selection")
 local CollectionService = game:GetService("CollectionService")
-local CoreGui = game:GetService("CoreGui")
 
+local Globals = require(script.Parent.Globals)
 local Helper = require(script.Parent.Helper)
 local InstancePool = require(script.Parent.InstancePool)
 local Signal = require(script.Parent.Signal)
 
 local ROOT = script.Parent
-local GIZMO_ROOT = CoreGui:FindFirstChild("GIZMO_ROOT")
-if GIZMO_ROOT == nil then
-	GIZMO_ROOT = Instance.new("Folder")
-	GIZMO_ROOT.Name = "GIZMO_ROOT"
-	GIZMO_ROOT.Parent = CoreGui
-end
+
 
 
 local function newAttachment(position, index)
@@ -435,7 +430,7 @@ function Curve:drawLine(visible, redraw, cpIndex)
 			:Lerp(Color3.new(1, 1, 1), math.clamp(i/DISPLAY_SETTINGS.CurveFidelity, 0, 1))
 		
 		curveSegment.Adornee = self.root
-		curveSegment.Parent = GIZMO_ROOT
+		curveSegment.Parent = Globals.GIZMO_ROOT
 	end
 end
 
@@ -488,7 +483,7 @@ function Curve:drawHandles(visible, redraw)
 		
 		pointBall.Adornee = self.root
 		pointBall.CFrame = CFrame.new(attachment.Position)
-		pointBall.Parent = GIZMO_ROOT
+		pointBall.Parent = Globals.GIZMO_ROOT
 			
 		-- tangent line
 		if Curve.isTangent(index) then
@@ -507,7 +502,7 @@ function Curve:drawHandles(visible, redraw)
 			tangentSegment.CFrame = CFrame.new(pos0, pos1) * CFrame.new(0, 0, -dist/2)
 			tangentSegment.Size = Vector3.new(DISPLAY_SETTINGS.CurveThickness*0.75, DISPLAY_SETTINGS.CurveThickness*0.75, dist)
 			tangentSegment.Adornee = self.root
-			tangentSegment.Parent = GIZMO_ROOT
+			tangentSegment.Parent = Globals.GIZMO_ROOT
 		end
 	end
 end
