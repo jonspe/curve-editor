@@ -1,5 +1,7 @@
 # Curve Editor Plugin
-yeet
+
+
+https://user-images.githubusercontent.com/45041362/228998311-fc37a4a3-c6d0-4992-856b-d434e0b1ac1a.mp4
 
 ## Getting Started
 To build the plugin to your Roblox plugins folder:
